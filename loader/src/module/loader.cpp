@@ -65,8 +65,23 @@ void loadEntry(const Plan& plan, const PlanModule& entry) {
   close(entry.fd);
 
   auto* m = reinterpret_cast<ZygiskNextModule*>(dlsym(lib, "zn_module"));
-  if (!m || !m->onModuleLoaded) {
-    LOGE("%s does not export zn_module", entry.path.c_str());
+  if (!m) {
+    // Standard Zygisk modules require an entirely different API table and
+    // pre/post-specialization lifecycle. Never invoke that entrypoint with the
+    // ZygiskNext API; doing so would corrupt the target process.
+    if (dlsym(lib, "zygisk_module_entry")) {
+      LOGW("%s exports zygisk_module_entry (standard Zygisk); "
+           "compatibility runtime is not implemented, skipping safely",
+           entry.path.c_str());
+    } else {
+      LOGE("%s does not export zn_module or zygisk_module_entry",
+           entry.path.c_str());
+    }
+    return;
+  }
+  if (!m->onModuleLoaded) {
+    LOGE("%s exports zn_module without an onModuleLoaded callback",
+         entry.path.c_str());
     return;
   }
   if (m->target_api_version < 1 ||
