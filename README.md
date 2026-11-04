@@ -1,5 +1,7 @@
 # ZNNext
 
+> **ZNextended fork status:** Experimental dual-API development is underway on the `feat/dual-api-foundation` branch. Standard Zygisk modules are **not supported yet**; the existing ZygiskNext API loader remains the working baseline. [Development plan](docs/dual-api-compatibility.md). Do not replace a working Zygisk provider with an experimental build.
+
 A from-scratch, standalone implementation of the **Zygisk Next module**.
 
 > [!IMPORTANT]
