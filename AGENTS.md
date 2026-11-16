@@ -1,15 +1,17 @@
 # AGENTS.md
 
-This document provides strict guidelines, context, and constraints for AI agents working on the ZNNext repository.
+This document provides development guidelines for the ZNextended fork. It retains ZNNext's independently authored implementation and adds a separate, opt-in standard Zygisk compatibility roadmap.
 
 ## CORE IDENTITY AND CONSTRAINTS
 
 Before writing, refactoring, or modifying any code, you must internalize the following absolute truths about this project. Violating these is considered a critical failure.
 
-1. IT IS a standalone, from-scratch ZygiskNext (ZN) Module Loader. Its sole purpose is to provide a runtime environment and loading mechanism specifically for modules built against the ZygiskNext API.
-2. IT IS NOT ZygiskNext (ZN) itself. Never refer to this project as "ZygiskNext" or claim it is the original ZN project.
-3. IT IS NOT a generic Zygisk module loader. The Zygisk API and ZygiskNext API are distinct. Do not conflate them, and do not add generic Zygisk loading logic.
-4. IT IS NOT a full Zygisk implementation. Users requiring Zygisk must enable a separate, dedicated Zygisk implementation elsewhere.
+1. The existing ZygiskNext module loader must remain functional, with its current API and selectable hooking backends preserved.
+2. This is the independently maintained ZNextended fork, not the original closed-source ZygiskNext implementation or the upstream ZNNext project.
+3. A goal of this fork is to independently implement a **separate** standard Zygisk API v5 loader. Never conflate the Zygisk API and ZygiskNext API, or invoke one entrypoint with the other's API table.
+4. Standard Zygisk support is **not implemented yet**. Until its real pre/post-specialization lifecycle has been built and tested, do not advertise drop-in compatibility or run standard modules through an incomplete shim.
+
+See also [the staged dual-API implementation plan](docs/dual-api-compatibility.md). Do not install test builds as replacements for working Zygisk providers.
 
 ## ZN CLOSED-SOURCE AND STRICT CLEANROOM MANDATE
 
@@ -43,8 +45,8 @@ To comply with this and maintain legal and technical independence, you must adhe
 
 When tasked with a feature implementation or bug fix, follow this strict sequence:
 
-1. Analyze: Understand the request strictly within the context of the "ZN Module Loader" identity.
+1. Analyze: Distinguish the existing ZygiskNext API loader from the proposed separate standard Zygisk compatibility runtime.
 2. Constraint Check: Explicitly verify that the proposed solution does not violate the Cleanroom Policy or ZN's copyright restrictions (No Picking, No Copying).
 3. Design: Outline an original, from-scratch approach to solve the problem. If reverse engineering insights are used, ensure the implementation is purely cleanroom.
 4. Implement: Write the code with clear, descriptive variable names.
-5. Self-Review: Before outputting the final code, ask yourself: "Is this an independent implementation? Does it mistakenly assume generic Zygisk behavior? Does it contain any extracted logic from ZN?" If yes, revise immediately.
+5. Self-Review: Verify API separation, real specialization timing, independent implementation, correct licenses, safe failure on unsupported capabilities, and no proprietary ZygiskNext code extraction.
